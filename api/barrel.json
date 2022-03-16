@@ -1,0 +1,12 @@
+{
+	"baseUrl": "",
+	"directory": ["src"],
+	"delete": true,
+	"location": "below",
+	"name": "index",
+	"structure": "flat",
+	"verbose": true,
+	"include": [".ts$"],
+	"exclude": ["zeta.ts$"],
+	"singleQuotes": true
+}

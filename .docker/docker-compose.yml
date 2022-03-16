@@ -1,0 +1,78 @@
+version: "3.7"
+services:
+  api:
+    container_name: tsnode_api
+    build:
+      context: ../api
+      target: development
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - 4000:4000
+  app:
+    container_name: tsnode_application
+    build:
+      context: ../app
+      target: development
+    depends_on:
+      api:
+        condition: service_started
+      mysqldb:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+  mysqldb:
+    container_name: tsnode_mysql
+    image: arm64v8/mysql:8.0.28-oracle
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    user: mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql-db-data:/tmp/mysql/data #TODO
+    environment:
+      - MYSQL_DATABASE=email_db #TODO
+      - MYSQL_ROOT_PASSWORD=password #TODO
+      - MYSQL_USER=tsnode
+      - MYSQL_PASSWORD=password
+    ports:
+      - 3306:3306
+  zookeeper:
+    container_name: tsnode_zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+  kafka:
+    hostname: kafka
+    container_name: tsnode_kafka
+    image: confluentinc/cp-kafka:latest
+    healthcheck:
+      test: [ "CMD", "/kafka/check.sh", "zookeeper" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+volumes:
+  mysql-db-data:
+  redis-db-data:
