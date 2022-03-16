@@ -1,4 +1,17 @@
 # tsnode_test_case
+Assignment:
+- Create an app that can send N number of emails on the click of a button.
+- App must be built using the following:
+  - Front-end: React
+  - Back-end: NextJS & NodeJS
+  - Queue: Kafka
+  - Database: MySQL
+  - Container: Docker
+
+Deliverables:
+- Docker compose to set up the environment
+- Github Repository
+- Readme file how to run
 
 Issues:
 - The health-check for Kafka in the docker-compose doesn't seem to be working as expected. In order to get this to work you have to wait for Kafka to finish starting up and then manually click the `run` buttons for the API container and then the APP container.
