@@ -13,6 +13,9 @@ Deliverables:
 - Github Repository
 - Readme file how to run
 
+Architecture:
+![Architecture](images/architecture-diagram.png)
+
 Issues:
 - The health-check for Kafka in the docker-compose doesn't seem to be working as expected. In order to get this to work you have to wait for Kafka to finish starting up and then manually click the `run` buttons for the API container and then the APP container.
 - Clicking the `run email job` button will result in a CORS error. If run locally the application works to an extent...
